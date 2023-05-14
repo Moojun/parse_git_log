@@ -1,20 +1,8 @@
 import csv
-
-'''
-class Commits:
-    def __init__(self, project_name, old_commit, new_commit, merged_commit):
-        self.project_name = project_name
-        self.old_commit = old_commit
-        self.new_commit = new_commit
-        self.merged_commit = merged_commit
-
-    def __str__(self):
-        return '%s,%s,%s,%s' % (self.project_name, self.old_commit, self.new_commit, self.merged_commit)
-'''
-
+import re
 
 def create_project_csv():
-    file_name = "commits_info/Target-project-commits.csv"
+    file_name = "commits_info/Target-project-commits-v2.csv"
     with open(file_name, 'w', newline='') as csv_file:
         write_csv = csv.writer(csv_file, delimiter=',')
         write_csv.writerow(['project', 'old_commit', 'new_commit', 'merged_commit_status', 'commit_message'])
@@ -60,7 +48,8 @@ for project in projects:
         elif line.startswith("    "):   # commit message 의 경우 여러 줄로 구성되어 있기 때문에, 이 코드를 그대로 사용하면 맨 마지막 커밋 메시지가 등록된다.
             if message_flag:
                 line = line.lstrip().strip('\n')
-                if line.startswith("Merge branch") or line.startswith("Merge pull request"):
+                if re.search('^Merge', line) and ("branch" in line or "pull request" in line or "remote" in line):
+                    print(line)
                     commit_message = line
                     merged_commit_status = 'T'
                 else:
